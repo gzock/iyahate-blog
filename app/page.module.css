@@ -1,0 +1,97 @@
+.container {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap; /* 折り返しを可能にする */
+  justify-content: flex-start; /* コンテンツを右寄せにする */
+  overflow-x: scroll;
+  height: 75vh;
+  margin-top: 5vh;
+  margin-bottom: auto;
+  margin-right: 2vw;
+  margin-left: auto;
+  align-items: flex-start;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.verticalText {
+  font-size: 20px; /* お好みで調整してください */
+  white-space: normal; /* 文章の折り返しを可能にする */
+  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
+    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
+    "MS PMincho", serif; /* 明朝体のフォントを指定 */
+  line-height: 1.6; /* 行間隔を調整 */
+  min-width: 10vw; /* コンテナーの最小幅をビューポートの幅に設定 */
+  box-sizing: border-box; /* ボックスサイズの計算方法を指定 */
+  padding-right: 1em; /* 右側のパディングを追加 */
+  margin-right: 0px;
+}
+
+.header {
+  writing-mode: horizontal-tb;
+  position: fixed;
+  top: 0;
+  left: 0; /* 左寄せの位置指定 */
+  width: 100%;
+  background-color: #fff;
+  text-align: left; /* テキストを左に寄せる */
+  z-index: 1000;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 20px; /* 余白の調整 */
+  font-size: 32px; /* フォントサイズを大きくする */
+  font-family: "Hiragino Mincho ProN", serif;
+}
+
+.footer {
+  writing-mode: horizontal-tb;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0; /* 右端の位置指定を追加 */
+  display: flex;
+  justify-content: space-between; /* 左右にコンテンツを配置 */
+  align-items: center; /* 中央揃え */
+  width: 100%;
+  background-color: #fff;
+  z-index: 1000;
+  border-top: 1px solid #ccc;
+  padding: 10px; /* 上下左右のパディングを指定 */
+}
+
+.button {
+  writing-mode: horizontal-tb;
+
+  cursor: pointer;
+  padding: 5px 10px; /* ボタンのサイズを小さく調整 */
+  margin: 0 10px; /* ボタンの外側の余白を設定 */
+  border: none;
+  background-color: #9cb4d1;
+  color: #ffffff;
+  border-radius: 5px;
+  font-size: 14px; /* フォントサイズを調整 */
+}
+
+.article {
+  min-width: 1vw;
+}
+
+.mainTitle {
+  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
+    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
+    "MS PMincho", serif; /* 明朝体のフォントを指定 */
+  line-height: 1.6; /* 行間隔を調整 */
+  font-size: 36px; /* タイトルのフォントサイズを大きく */
+  font-weight: bold; /* フォントを太く */
+  margin: 20px 0; /* 上下の余白を設定 */
+}
+
+.subTitle {
+  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
+    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
+    "MS PMincho", serif; /* 明朝体のフォントを指定 */
+  line-height: 1.6; /* 行間隔を調整 */
+  font-size: 28px; /* サブタイトルのフォントサイズを大きく */
+  font-weight: bold;
+  margin: 15px 0px; /* 上下の余白を設定 */
+}
