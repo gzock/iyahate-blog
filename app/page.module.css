@@ -1,17 +1,14 @@
 .container {
   display: flex;
-  flex-direction: row-reverse;
-  flex-wrap: wrap; /* 折り返しを可能にする */
-  justify-content: flex-start; /* コンテンツを右寄せにする */
-  overflow-x: scroll;
+  justify-content: flex-end; /* コンテンツを右寄せにする */
+  align-items: flex-start; /* 上に揃える */
+  overflow-x: auto;
   height: 75vh;
   margin-top: 5vh;
   margin-bottom: auto;
   margin-right: 2vw;
   margin-left: auto;
-  align-items: flex-start;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  padding-top: 1rem;
 }
 
 .verticalText {
@@ -74,6 +71,11 @@
 
 .article {
   min-width: 1vw;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .mainTitle {
