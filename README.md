@@ -28,10 +28,10 @@ lead: "リード文"
 本文...
 ```
 
-Convert the Markdown files into `data/posts.json` anytime with:
+Convert the Markdown files into per-post JSON files (manifest + individual documents under `public/posts/`) anytime with:
 
 ```bash
 npm run posts:generate
 ```
 
-The app keeps using `data/posts.json`, so rerun the command whenever you add or edit Markdown content.
+The app reads from `public/posts/manifest.json` plus the per-post files, so rerun the command whenever you add or edit Markdown content to refresh those assets.

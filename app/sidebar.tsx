@@ -12,11 +12,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { Post } from "@/types/post";
+import { PostSummary } from "@/types/post";
 import { formatUpdatedAt } from "@/lib/date";
 
 export type SidebarProps = {
-  posts: Post[];
+  posts: PostSummary[];
   activePostId: string | null;
   onSelect: (postId: string) => void;
   isOpen: boolean;

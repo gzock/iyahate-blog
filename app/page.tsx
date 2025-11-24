@@ -1,55 +1,101 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "./header";
 import Footer from "./footer";
 import Content from "./content";
 import Sidebar from "./sidebar";
-import { Post } from "@/types/post";
-import { getAllPosts } from "@/lib/posts";
+import { Post, PostSummary } from "@/types/post";
+import { fetchPostManifest, fetchPostById } from "@/lib/posts";
 
 export default function Home() {
-  const allPosts = useMemo(() => getAllPosts(), []);
-  const [visiblePosts, setVisiblePosts] = useState<Post[]>(allPosts);
-  const [activePost, setActivePost] = useState<Post | null>(
-    allPosts[0] ?? null
-  );
+  const [allSummaries, setAllSummaries] = useState<PostSummary[]>([]);
+  const [visibleSummaries, setVisibleSummaries] = useState<PostSummary[]>([]);
+  const [activePost, setActivePost] = useState<Post | null>(null);
+  const [activeSummary, setActiveSummary] = useState<PostSummary | null>(null);
   const [isRecentOpen, setIsRecentOpen] = useState(false);
+  const [isLoadingPost, setIsLoadingPost] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchPostManifest()
+      .then((summaries) => {
+        if (!mounted) {
+          return;
+        }
+        setAllSummaries(summaries);
+        setVisibleSummaries(summaries);
+        if (summaries[0]) {
+          selectPostById(summaries[0].id, summaries[0]);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setError("記事の読み込みに失敗しました。");
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const activeIndex = useMemo(() => {
-    if (!activePost) {
+    if (!activeSummary) {
       return -1;
     }
-    return visiblePosts.findIndex((post) => post.id === activePost.id);
-  }, [activePost, visiblePosts]);
+    return visibleSummaries.findIndex(
+      (post) => post.id === activeSummary.id
+    );
+  }, [activeSummary, visibleSummaries]);
 
   const handleSearch = (query: string) => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) {
-      setVisiblePosts(allPosts);
-      setActivePost(allPosts[0] ?? null);
+      setVisibleSummaries(allSummaries);
+      if (allSummaries[0]) {
+        selectPostById(allSummaries[0].id, allSummaries[0]);
+      }
       return;
     }
 
-    const filtered = allPosts.filter((post) => {
-      const searchableText = [
-        post.title,
-        post.lead,
-        ...post.sections.map((section) => `${section.heading} ${section.body}`),
-      ]
-        .join(" ")
-        .toLowerCase();
-      return searchableText.includes(normalized);
-    });
+    const filtered = allSummaries.filter((post) =>
+      post.searchIndex.toLowerCase().includes(normalized)
+    );
 
-    setVisiblePosts(filtered);
-    setActivePost(filtered[0] ?? null);
+    setVisibleSummaries(filtered);
+    if (filtered[0]) {
+      selectPostById(filtered[0].id, filtered[0]);
+    } else {
+      setActivePost(null);
+      setActiveSummary(null);
+    }
+  };
+
+  const selectPostById = async (
+    postId: string,
+    summaryFallback?: PostSummary
+  ) => {
+    setIsLoadingPost(true);
+    setError(null);
+    const summary =
+      summaryFallback ??
+      allSummaries.find((candidate) => candidate.id === postId) ??
+      null;
+    try {
+      const post = await fetchPostById(postId);
+      setActivePost(post);
+      setActiveSummary(summary ?? null);
+      if (!post) {
+        setError("記事の読み込みに失敗しました。");
+      }
+    } finally {
+      setIsLoadingPost(false);
+    }
   };
 
   const handleSelectPost = (postId: string) => {
-    const target = allPosts.find((post) => post.id === postId);
-    if (target) {
-      setActivePost(target);
-    }
+    selectPostById(postId);
     setIsRecentOpen(false);
   };
 
@@ -57,9 +103,9 @@ export default function Home() {
     if (activeIndex === -1) {
       return;
     }
-    const target = visiblePosts[activeIndex + direction];
+    const target = visibleSummaries[activeIndex + direction];
     if (target) {
-      setActivePost(target);
+      selectPostById(target.id, target);
     }
   };
 
@@ -67,7 +113,8 @@ export default function Home() {
   const handleNextPost = () => handleRelativePost(1);
 
   const canGoPrevious = activeIndex > 0;
-  const canGoNext = activeIndex !== -1 && activeIndex < visiblePosts.length - 1;
+  const canGoNext =
+    activeIndex !== -1 && activeIndex < visibleSummaries.length - 1;
 
   return (
     <div>
@@ -77,7 +124,11 @@ export default function Home() {
       />
       <hr className="h-px border-0 bg-gray-200 dark:bg-gray-700" />
       <main className="w-full px-5 py-10">
-        <Content post={activePost} />
+        {error ? (
+          <div className="text-center text-sm text-red-500">{error}</div>
+        ) : (
+          <Content post={activePost} isLoading={isLoadingPost} />
+        )}
       </main>
       <hr className="h-px border-0 bg-gray-200 dark:bg-gray-700" />
       <Footer
@@ -87,8 +138,8 @@ export default function Home() {
         canNext={canGoNext}
       />
       <Sidebar
-        posts={visiblePosts}
-        activePostId={activePost?.id ?? null}
+        posts={visibleSummaries}
+        activePostId={activeSummary?.id ?? null}
         onSelect={handleSelectPost}
         isOpen={isRecentOpen}
         onClose={() => setIsRecentOpen(false)}

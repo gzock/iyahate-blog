@@ -6,7 +6,7 @@ import matter from "gray-matter";
 
 const cwd = process.cwd();
 const inputDir = path.resolve(cwd, process.argv[2] ?? "content/posts");
-const outputFile = path.resolve(cwd, process.argv[3] ?? "data/posts.json");
+const outputDir = path.resolve(cwd, process.argv[3] ?? "public/posts");
 
 if (!fs.existsSync(inputDir)) {
   console.error(`Input directory not found: ${inputDir}`);
@@ -44,9 +44,34 @@ posts.sort(
     new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
 );
 
-fs.writeFileSync(outputFile, JSON.stringify(posts, null, 2) + "\n", "utf8");
+fs.rmSync(outputDir, { recursive: true, force: true });
+fs.mkdirSync(outputDir, { recursive: true });
+
+const manifest = posts.map((post) => ({
+  id: post.id,
+  title: post.title,
+  updatedAt: post.updatedAt,
+  lead: post.lead,
+  sectionHeadings: post.sections.map((section) => section.heading),
+  searchIndex: buildSearchIndex(post),
+}));
+
+fs.writeFileSync(
+  path.join(outputDir, "manifest.json"),
+  JSON.stringify(manifest, null, 2) + "\n",
+  "utf8"
+);
+
+posts.forEach((post) => {
+  fs.writeFileSync(
+    path.join(outputDir, `${post.id}.json`),
+    JSON.stringify(post, null, 2) + "\n",
+    "utf8"
+  );
+});
+
 console.log(
-  `Generated ${posts.length} posts → ${path.relative(cwd, outputFile)}`
+  `Generated ${posts.length} posts → ${path.relative(cwd, outputDir)}`
 );
 
 function extractSections(markdown) {
@@ -123,4 +148,17 @@ function deriveLead(introText, explicitLead, sections) {
   }
 
   return "";
+}
+
+function buildSearchIndex(post, maxLength = 1200) {
+  const text = [
+    post.title,
+    post.lead,
+    ...post.sections.map((section) => `${section.heading} ${section.body}`),
+  ]
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text.slice(0, maxLength);
 }
