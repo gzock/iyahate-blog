@@ -1,26 +1,34 @@
 // Content.tsx
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React from "react";
 import styles from "./page.module.css";
+import { Post } from "@/types/post";
+import { formatUpdatedAt } from "@/lib/date";
 
-const Content: React.FC = () => {
-  const router = useRouter();
-  const [date, setDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  });
+type ContentProps = {
+  post: Post | null;
+};
 
-  // 日付の変更やナビゲーションの処理など
+const Content: React.FC<ContentProps> = ({ post }) => {
+  if (!post) {
+    return (
+      <div className={styles.container}>
+        <p className={styles.emptyState}>該当する記事がありません。</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       <article className={styles.article}>
-        <h1 className={styles.mainTitle}>title</h1>
-        <p className={styles.verticalText}>hogehoge</p>
-        <h2 className={styles.subTitle}>section 1 </h2>
-        <p className={styles.verticalText}>foobar</p>
-        <h2 className={styles.subTitle}>section 2</h2>
-        <p className={styles.verticalText}>　piyopiyo</p>
+        <p className={styles.meta}>{formatUpdatedAt(post.updatedAt)}</p>
+        <h1 className={styles.mainTitle}>{post.title}</h1>
+        <p className={styles.verticalText}>{post.lead}</p>
+        {post.sections.map((section, index) => (
+          <section key={`${post.id}-${index}`}>
+            <h2 className={styles.subTitle}>{section.heading}</h2>
+            <p className={styles.verticalText}>{section.body}</p>
+          </section>
+        ))}
       </article>
     </div>
   );
