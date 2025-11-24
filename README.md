@@ -34,7 +34,14 @@ npx tailwindcss init -p
 	- **Build output directory:** `.vercel/output/static`
 	- **Node version:** match local env (e.g., 18+).
 	- **Environment variable:** `NPM_CONFIG_LEGACY_PEER_DEPS=1` (required until Cloudflare officially supports Next.js 16 with their adapter). Add the same variable for both Preview and Production deployments.
-	- `wrangler.toml` in the repo already defines `pages_build_output_dir`, so `wrangler pages deploy` works if you prefer manual releases.
+	 - `wrangler.toml` now includes the `[pages]` block with `build_command`/`build_output_dir`, so you can deploy manually with a single command after building:
+
+		 ```bash
+		 npm run pages:build
+		 npx wrangler deploy
+		 ```
+
+		 (Wrangler will run the build itself if `.vercel/output/static` is missing.)
 
 > Cloudflare currently recommends [OpenNext](https://opennext.js.org/cloudflare) for the newest Next.js versions. The above setup keeps using `@cloudflare/next-on-pages` with the legacy peer-deps flag; switch adapters once official Next 16 support lands for a smoother CI experience.
 
