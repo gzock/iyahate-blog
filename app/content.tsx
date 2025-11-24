@@ -10,6 +10,20 @@ type ContentProps = {
 };
 
 const Content: React.FC<ContentProps> = ({ post, isLoading = false }) => {
+  const renderParagraphs = (text: string, keyPrefix: string) =>
+    text
+      .split(/\n{2,}/)
+      .map((paragraph) => paragraph.trim())
+      .filter(Boolean)
+      .map((paragraph, index) => (
+        <p
+          key={`${keyPrefix}-${index}`}
+          className={`${styles.verticalText} ${styles.paragraph}`}
+        >
+          {paragraph}
+        </p>
+      ));
+
   if (isLoading) {
     return (
       <div className={styles.container}>
@@ -31,11 +45,11 @@ const Content: React.FC<ContentProps> = ({ post, isLoading = false }) => {
       <article className={styles.article}>
         <p className={styles.meta}>{formatUpdatedAt(post.updatedAt)}</p>
         <h1 className={styles.mainTitle}>{post.title}</h1>
-        <p className={styles.verticalText}>{post.lead}</p>
+        {renderParagraphs(post.lead, "lead")}
         {post.sections.map((section, index) => (
           <section key={`${post.id}-${index}`}>
             <h2 className={styles.subTitle}>{section.heading}</h2>
-            <p className={styles.verticalText}>{section.body}</p>
+            {renderParagraphs(section.body, `${post.id}-${section.heading}`)}
           </section>
         ))}
       </article>
