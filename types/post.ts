@@ -10,3 +10,8 @@ export type Post = {
   lead: string;
   sections: PostSection[];
 };
+
+export type PostSummary = Omit<Post, "sections"> & {
+  sectionHeadings: string[];
+  searchIndex: string;
+};

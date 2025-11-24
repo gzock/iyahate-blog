@@ -1,13 +1,39 @@
-import rawPosts from "../data/posts.json";
-import { Post } from "@/types/post";
+import { Post, PostSummary } from "@/types/post";
 
-const posts: Post[] = rawPosts as Post[];
+const manifestCache: { data: PostSummary[] | null } = { data: null };
+const postCache = new Map<string, Post>();
 
-const sortedPosts = [...posts].sort((a, b) => {
-  return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-});
+const manifestUrl = "/posts/manifest.json";
+const postUrl = (id: string) => `/posts/${id}.json`;
 
-export const getAllPosts = () => [...sortedPosts];
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, { cache: "force-cache" });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url} (${response.status})`);
+  }
+  return (await response.json()) as T;
+}
 
-export const findPostById = (id: string) =>
-  sortedPosts.find((post) => post.id === id);
+export async function fetchPostManifest(): Promise<PostSummary[]> {
+  if (manifestCache.data) {
+    return manifestCache.data;
+  }
+
+  const data = await fetchJson<PostSummary[]>(manifestUrl);
+  manifestCache.data = data;
+  return data;
+}
+
+export async function fetchPostById(id: string): Promise<Post | null> {
+  if (postCache.has(id)) {
+    return postCache.get(id)!;
+  }
+
+  try {
+    const post = await fetchJson<Post>(postUrl(id));
+    postCache.set(id, post);
+    return post;
+  } catch (error) {
+    return null;
+  }
+}

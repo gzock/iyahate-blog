@@ -6,9 +6,18 @@ import { formatUpdatedAt } from "@/lib/date";
 
 type ContentProps = {
   post: Post | null;
+  isLoading?: boolean;
 };
 
-const Content: React.FC<ContentProps> = ({ post }) => {
+const Content: React.FC<ContentProps> = ({ post, isLoading = false }) => {
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <p className={styles.emptyState}>記事を読み込んでいます…</p>
+      </div>
+    );
+  }
+
   if (!post) {
     return (
       <div className={styles.container}>
