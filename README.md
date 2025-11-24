@@ -33,8 +33,8 @@ npx tailwindcss init -p
 	- **Build command:** `npm run pages:build`
 	- **Build output directory:** `.vercel/output/static`
 	- **Node version:** match local env (e.g., 18+).
-	- **Environment variable:** `NPM_CONFIG_LEGACY_PEER_DEPS=1` (required until Cloudflare officially supports Next.js 16 with their adapter). Add the same variable for both Preview and Production deployments.
-	 - `wrangler.toml` now includes the `[pages]` block with `build_command`/`build_output_dir`, so you can deploy manually with a single command after building:
+	- **Environment variable:** `NPM_CONFIG_LEGACY_PEER_DEPS=1` (required until Cloudflare officially supports Next.js 16 with their adapter). Add the same variable for both Preview and Production deployments. `.npmrc` already sets `legacy-peer-deps=true`, so Cloudflare’s default `npm install` automatically picks up the same flag even if the environment variable is missing.
+	- `wrangler.toml` now includes the `[pages]` block with `build_command`/`build_output_dir`, so you can deploy manually with a single command after building:
 
 		 ```bash
 		 npm run pages:build
