@@ -12,38 +12,31 @@ npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-## Cloudflare Pages (GitOps)
+## Cloudflare Workers (OpenNext)
 
-1. Ensure dependencies are installed (already in `package.json`): `@cloudflare/next-on-pages`, `wrangler`, `cross-env`.
-2. Build the Cloudflare Pages bundle locally:
-
-	```bash
-	npm run pages:build
-	```
-
-	This command runs `npx @cloudflare/next-on-pages` and outputs the finalized assets to `.vercel/output/`.
-3. (Optional) Preview locally with Wrangler:
+1. Dependencies already listed in `package.json`: `@opennextjs/cloudflare`, `wrangler@^3.99.0`. Local dev still uses `next dev`, but `.dev.vars` is required so the adapter knows to load `.env.development`.
+2. Build and preview the Worker runtime locally (runs the Next build, converts it to `.open-next/`, then launches Wrangler):
 
 	```bash
-	npx wrangler pages dev .vercel/output/static --functions .vercel/output/functions --compatibility-date=2024-11-24
+	npm run preview
 	```
 
-4. Configure Cloudflare Pages (GitOps):
-	- Connect this GitHub repo to a Pages project.
-	- **Build command:** `npm run pages:build`
-	- **Build output directory:** `.vercel/output/static`
-	- **Node version:** match local env (e.g., 18+).
-	- **Environment variable:** `NPM_CONFIG_LEGACY_PEER_DEPS=1` (required until Cloudflare officially supports Next.js 16 with their adapter). Add the same variable for both Preview and Production deployments. `.npmrc` already sets `legacy-peer-deps=true`, so Cloudflare’s default `npm install` automatically picks up the same flag even if the environment variable is missing.
-	- `wrangler.toml` now includes the `[pages]` block with `build_command`/`build_output_dir`, so you can deploy manually with a single command after building:
+3. Deploy straight from your machine (build + upload + activate the Worker):
 
-		 ```bash
-		 npm run pages:build
-		 npx wrangler deploy
-		 ```
+	```bash
+	npm run deploy
+	```
 
-		 (Wrangler will run the build itself if `.vercel/output/static` is missing.)
+	Use `npm run upload` if you prefer a gradual deployment (creates a new version without routing traffic immediately). `npm run cf:typegen` regenerates `cloudflare-env.d.ts` so your bindings stay typed.
+4. Git-based deployments use [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/):
+	- Connect the repo to Workers Builds.
+	- **Build command:** `npx opennextjs-cloudflare build`
+	- **Deploy command:** `npx opennextjs-cloudflare deploy` (or `upload`).
+	- Cloudflare’s install step must include devDependencies so the CLI is available (default behavior for Workers Builds).
+	- Wrangler config (`wrangler.toml`) already points `main` to `.open-next/worker.js`, binds static assets from `.open-next/assets`, and enables the `nodejs_compat` + `global_fetch_strictly_public` flags required by the adapter.
+5. Static asset caching: `public/_headers` sets `Cache-Control: public,max-age=31536000,immutable` for `/_next/static/*` so your JS chunks are treated as immutable on Cloudflare’s edge caches.
 
-> Cloudflare currently recommends [OpenNext](https://opennext.js.org/cloudflare) for the newest Next.js versions. The above setup keeps using `@cloudflare/next-on-pages` with the legacy peer-deps flag; switch adapters once official Next 16 support lands for a smoother CI experience.
+The OpenNext adapter writes all build artifacts to `.open-next/` (ignored in git). Keep using the standard `next dev` workflow for iteration; switch to `npm run preview` whenever you need to validate behavior inside the Workers runtime before shipping.
 
 ## Writing posts in Markdown
 
