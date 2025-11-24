@@ -1,45 +1,51 @@
-// Footer.tsx
+"use client";
+
 import React from "react";
-import styles from "./page.module.css";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
-const Footer: React.FC = () => {
+import { Button } from "@/components/ui/button";
+
+type FooterProps = {
+  onPrevious: () => void;
+  onNext: () => void;
+  canPrevious: boolean;
+  canNext: boolean;
+};
+
+const Footer: React.FC<FooterProps> = ({
+  onPrevious,
+  onNext,
+  canPrevious,
+  canNext,
+}) => {
   return (
-    <footer className="text-gray-600 body-font">
-      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center justify-between">
-        <button className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="5"
-            className="w-4 h-4 ml-1"
-            viewBox="0 0 24 24"
-          >
-            <path d="M19 12H5m7-7l-7 7 7 7"></path>
-          </svg>
-        </button>
-
-        {/*
-        <div className="md:ml-auto md:flex hidden flex-wrap items-center text-base justify-center">
-          <a className="mr-5 hover:text-gray-900">フッターリンク1</a>
-          <a className="mr-5 hover:text-gray-900">フッターリンク2</a>
-        </div>
-        */}
-
-        <button className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="5"
-            className="w-4 h-4 ml-1"
-            viewBox="0 0 24 24"
-          >
-            <path d="M5 12h14m-7-7l7 7-7 7"></path>
-          </svg>
-        </button>
+    <footer className="border-t border-border bg-white/80 text-foreground backdrop-blur supports-[backdrop-filter]:bg-white/60">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-4">
+        <Button
+          type="button"
+          variant="ghost"
+          size="lg"
+          onClick={onPrevious}
+          disabled={!canPrevious}
+          className="group rounded-full border border-transparent px-6 text-sm font-medium tracking-[0.4em] text-muted-foreground transition hover:border-border hover:bg-muted"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4 transition group-hover:-translate-x-1" />
+          前へ
+        </Button>
+        <p className="hidden text-xs uppercase tracking-[0.6em] text-muted-foreground sm:block">
+          archive
+        </p>
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          onClick={onNext}
+          disabled={!canNext}
+          className="group rounded-full border-border px-6 text-sm font-medium tracking-[0.4em]"
+        >
+          次へ
+          <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
+        </Button>
       </div>
     </footer>
   );
