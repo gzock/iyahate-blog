@@ -1,63 +1,72 @@
-# development
+# 開発ガイド
+
+## 初期セットアップ
 
 ```bash
 npm ci
-npm run dev
+npm run posts:gen   # Markdown → JSON 変換（初回必須）
+npm run dev         # Next.js 開発サーバー
 ```
 
-## deploy on Vercel
+- 記事は`content/posts/*.md`に保存し、`npm run posts:gen`で`public/posts/`以下にマニフェスト＋各記事JSONを生成します。
+- 開発サーバー起動中もMarkdownを編集したら`npm run posts:gen`を再実行してください。`NODE_ENV=development`ではHTTPキャッシュとアプリ内キャッシュを無効化しているため、ブラウザを更新すればすぐ反映されます。
 
-```bash
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init -p
-```
+## Markdown で記事を書く
 
-## Cloudflare Workers (OpenNext)
+1. `content/posts`にMarkdownファイルを作り、以下のようにFrontmatterを記述します。
 
-1. Dependencies already listed in `package.json`: `@opennextjs/cloudflare`, `wrangler@^3.99.0`. Local dev still uses `next dev`, but `.dev.vars` is required so the adapter knows to load `.env.development`.
-2. Build and preview the Worker runtime locally (runs the Next build, converts it to `.open-next/`, then launches Wrangler):
+	```md
+	---
+	id: example-post
+	title: "タイトル"
+	updatedAt: "2025-01-01T00:00:00+09:00"
+	lead: "リード文"
+	---
+
+	## 見出し
+	本文...
+	```
+
+2. 生成コマンドを実行します。
+
+	```bash
+	npm run posts:gen
+	```
+
+3. `public/posts/manifest.json` と `public/posts/<id>.json` が更新され、アプリ全体が最新記事を読むようになります。
+
+## Cloudflare Workers / Pages (OpenNext)
+
+Cloudflare推奨の[@opennextjs/cloudflare](https://opennext.js.org/cloudflare)でデプロイします。`next dev`で開発し、出荷前にOpenNextでWorker形式へ変換します。
+
+1. 依存関係（`@opennextjs/cloudflare`, `wrangler@^4.49.1`など）は`package.json`に含まれています。`.dev.vars`は`NEXTJS_ENV=development`を設定済みで、Next.jsの`.env.development`も読み込みます。
+2. Cloudflare Runtimeでの動作確認：
 
 	```bash
 	npm run preview
 	```
 
-3. Deploy straight from your machine (build + upload + activate the Worker):
+	`next build` → `.open-next/` 変換 → `wrangler dev` の順に実行されます。
+
+3. 手元から即時デプロイ：
 
 	```bash
 	npm run deploy
 	```
 
-	Use `npm run upload` if you prefer a gradual deployment (creates a new version without routing traffic immediately). `npm run cf:typegen` regenerates `cloudflare-env.d.ts` so your bindings stay typed.
-4. Git-based deployments use [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/):
-	- Connect the repo to Workers Builds.
-	- **Build command:** `npx opennextjs-cloudflare build`
-	- **Deploy command:** `npx opennextjs-cloudflare deploy` (or `upload`).
-	- Cloudflare’s install step must include devDependencies so the CLI is available (default behavior for Workers Builds).
-	- Wrangler config (`wrangler.toml`) already points `main` to `.open-next/worker.js`, binds static assets from `.open-next/assets`, and enables the `nodejs_compat` + `global_fetch_strictly_public` flags required by the adapter.
-5. Static asset caching: `public/_headers` sets `Cache-Control: public,max-age=31536000,immutable` for `/_next/static/*` so your JS chunks are treated as immutable on Cloudflare’s edge caches.
+	段階的リリースをしたい場合は`npm run upload`でバージョンのみアップロードし、Cloudflareダッシュボードで切り替えます。
 
-The OpenNext adapter writes all build artifacts to `.open-next/` (ignored in git). Keep using the standard `next dev` workflow for iteration; switch to `npm run preview` whenever you need to validate behavior inside the Workers runtime before shipping.
+4. `npm run cf:typegen`で`cloudflare-env.d.ts`を再生成すると、BindingsをTypeScriptから安全に参照できます。
 
-## Writing posts in Markdown
+5. Git 連携（Workers Builds）を使う場合：
+	- **Build command**: `npx opennextjs-cloudflare build`
+	- **Deploy command**: `npx opennextjs-cloudflare deploy`（または `upload`）
+	- devDependencies もインストールされるよう Workers Builds（旧 Pages builds）を使ってください。
+	- `wrangler.toml` は `main = ".open-next/worker.js"`、`assets = .open-next/assets`、`compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]` を設定済みです。
 
-Place `.md` files with frontmatter inside `content/posts`. Example frontmatter:
+6. 静的アセットは `public/_headers` で `/_next/static/*` に `Cache-Control: public,max-age=31536000,immutable` を付与しています。`.open-next/` は Git から除外しています。
 
-```md
----
-id: example-post
-title: "タイトル"
-updatedAt: "2025-01-01T00:00:00+09:00"
-lead: "リード文"
----
+## キャッシュに関して
 
-## 見出し
-本文...
-```
-
-Convert the Markdown files into per-post JSON files (manifest + individual documents under `public/posts/`) anytime with:
-
-```bash
-npm run posts:generate
-```
-
-The app reads from `public/posts/manifest.json` plus the per-post files, so rerun the command whenever you add or edit Markdown content to refresh those assets.
+- 開発時: `fetch` の `cache` を `no-store` にし、アプリ内のメモリキャッシュも無効化しています。`npm run posts:gen` 後にブラウザを更新すれば即座に反映されます。
+- 本番時: `force-cache` とアプリ内キャッシュが有効になり、Cloudflare エッジと合わせて高速配信します。必要ならビルドのバージョンをクエリに付与してキャッシュをバイパスできます。
