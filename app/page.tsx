@@ -123,7 +123,7 @@ export default function Home() {
         onToggleRecent={() => setIsRecentOpen((prev) => !prev)}
       />
       <hr className="h-px border-0 bg-gray-200 dark:bg-gray-700" />
-      <main className="w-full px-5 py-10">
+      <main className="w-full px-5 py-10 overflow-x-auto">
         {error ? (
           <div className="text-center text-sm text-red-500">{error}</div>
         ) : (

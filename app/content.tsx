@@ -1,5 +1,5 @@
 // Content.tsx
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./page.module.css";
 import { Post } from "@/types/post";
 import { formatUpdatedAt } from "@/lib/date";
@@ -10,6 +10,16 @@ type ContentProps = {
 };
 
 const Content: React.FC<ContentProps> = ({ post, isLoading = false }) => {
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!scrollRef.current) {
+      return;
+    }
+    const el = scrollRef.current;
+    el.scrollLeft = el.scrollWidth;
+  }, [post?.id]);
+
   const renderParagraphs = (text: string, keyPrefix: string) =>
     text
       .split(/\n{2,}/)
@@ -42,17 +52,19 @@ const Content: React.FC<ContentProps> = ({ post, isLoading = false }) => {
 
   return (
     <div className={styles.container}>
-      <article className={styles.article}>
-        <p className={styles.meta}>{formatUpdatedAt(post.updatedAt)}</p>
-        <h1 className={styles.mainTitle}>{post.title}</h1>
-        {renderParagraphs(post.lead, "lead")}
-        {post.sections.map((section, index) => (
-          <section key={`${post.id}-${index}`}>
-            <h2 className={styles.subTitle}>{section.heading}</h2>
-            {renderParagraphs(section.body, `${post.id}-${section.heading}`)}
-          </section>
-        ))}
-      </article>
+      <div className={styles.scrollWrapper} ref={scrollRef}>
+        <article className={styles.article}>
+          <p className={styles.meta}>{formatUpdatedAt(post.updatedAt)}</p>
+          <h1 className={styles.mainTitle}>{post.title}</h1>
+          {renderParagraphs(post.lead, "lead")}
+          {post.sections.map((section, index) => (
+            <section key={`${post.id}-${index}`}>
+              <h2 className={styles.subTitle}>{section.heading}</h2>
+              {renderParagraphs(section.body, `${post.id}-${section.heading}`)}
+            </section>
+          ))}
+        </article>
+      </div>
     </div>
   );
 };
