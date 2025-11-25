@@ -2,7 +2,7 @@
   display: flex;
   justify-content: flex-end; /* コンテンツを右寄せにする */
   align-items: stretch; /* 背景を縦にいっぱいに広げる */
-  overflow: auto;
+  overflow: hidden;
   height: min(82vh, calc(100vh - 220px));
   min-height: calc(100vh - 260px);
   width: 100%;
@@ -10,8 +10,22 @@
   padding: 1.5rem 2vw;
 }
 
+.scrollWrapper {
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.5rem; /* 横スクロールバー用の余白 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollWrapper::-webkit-scrollbar {
+  display: none;
+}
+
 .verticalText {
-  font-size: 20px; /* お好みで調整してください */
+  font-size: 18px; /* お好みで調整してください */
   white-space: normal; /* 文章の折り返しを可能にする */
   font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
     "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
@@ -77,8 +91,9 @@
 }
 
 .article {
-  min-width: min(92vw, 1300px);
-  width: 100%;
+  min-width: 100%;
+  width: max-content; /* コンテンツ量に応じて横幅を拡張 */
+  max-width: none;
   height: 100%;
   writing-mode: vertical-rl;
   text-orientation: mixed;
