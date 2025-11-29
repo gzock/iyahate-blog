@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run gen && next dev",
+    "build": "npm run gen && next build",
     "start": "next start",
     "lint": "next lint",
     "gen": "node scripts/markdown-to-posts.mjs",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "preview": "npm run gen && opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "npm run gen && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "upload": "npm run gen && opennextjs-cloudflare build && opennextjs-cloudflare upload",
     "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
