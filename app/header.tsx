@@ -29,7 +29,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onToggleRecent }) => {
 
   return (
     <header className="border-b border-border bg-white/80 text-foreground backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="container mx-auto flex items-center gap-6 px-5 py-4">
+      <div className="container mx-auto flex items-center gap-2 px-3 py-2 md:gap-6 md:px-5 md:py-4">
         <a
           className="flex items-center gap-3 text-gray-900"
           href="/"
@@ -40,7 +40,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onToggleRecent }) => {
         </a>
         <div className="flex flex-1 items-center justify-end gap-4">
           <form
-            className="flex max-w-xl flex-1 items-center gap-3 rounded-full border border-border bg-white/90 px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-ring"
+            className="flex max-w-xl flex-1 items-center gap-2 rounded-full border border-border bg-white/90 px-3 py-1.5 shadow-sm focus-within:ring-2 focus-within:ring-ring md:gap-3 md:px-4 md:py-2"
             onSubmit={handleSubmit}
           >
             <Search className="h-4 w-4 text-muted-foreground" />
@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onToggleRecent }) => {
               placeholder="過去の記事を検索"
               aria-label="Search posts"
             />
-            <Button size="sm" className="rounded-full px-4">
+            <Button size="sm" className="hidden rounded-full px-4 md:inline-flex">
               検索
             </Button>
           </form>
@@ -82,11 +82,11 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onToggleRecent }) => {
             <Button
               type="button"
               variant="outline"
-              className="rounded-full border-border bg-white/90 px-4 text-sm font-medium shadow-sm hover:bg-white"
+              className="rounded-full border-border bg-white/90 px-2 text-sm font-medium shadow-sm hover:bg-white md:px-4"
               onClick={onToggleRecent}
             >
               <Menu className="h-4 w-4" />
-              <span>最近の記事</span>
+              <span className="hidden md:inline">最近の記事</span>
             </Button>
           </div>
         </div>
