@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "弥終ブログ",
   description: "弥終ブログへようこそ",
+  icons: {
+    icon: "/profile.png",
+  },
 };
 
 export default function RootLayout({
