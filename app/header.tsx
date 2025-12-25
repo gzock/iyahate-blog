@@ -2,6 +2,8 @@
 
 import React, { useState, FormEvent, ChangeEvent } from "react";
 import { Github, Menu, Search, Twitter } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,14 +32,20 @@ const Header: React.FC<HeaderProps> = ({ onSearch, onToggleRecent }) => {
   return (
     <header className="border-b border-border bg-white/80 text-foreground backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto flex items-center gap-2 px-3 py-2 md:gap-6 md:px-5 md:py-4">
-        <a
+        <Link
           className="flex items-center gap-3 text-gray-900"
           href="/"
           aria-label="トップへ戻る"
         >
-          <img src="/profile.png" alt="logo" width="40" height="40" />
+          <Image
+            src="/profile.png"
+            alt="logo"
+            width={40}
+            height={40}
+            priority
+          />
           <span className="text-xl font-mincho tracking-[0.3em]">弥終</span>
-        </a>
+        </Link>
         <div className="flex flex-1 items-center justify-end gap-4">
           <form
             className="flex max-w-xl flex-1 items-center gap-2 rounded-full border border-border bg-white/90 px-3 py-1.5 shadow-sm focus-within:ring-2 focus-within:ring-ring md:gap-3 md:px-4 md:py-2"
