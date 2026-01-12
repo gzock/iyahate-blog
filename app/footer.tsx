@@ -30,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({
           className="group rounded-full border border-transparent px-6 text-sm font-medium tracking-[0.4em] text-muted-foreground transition hover:border-border hover:bg-muted"
         >
           <ArrowLeft className="mr-2 h-4 w-4 transition group-hover:-translate-x-1" />
-          前へ
+          次へ
         </Button>
         <p className="hidden text-xs uppercase tracking-[0.6em] text-muted-foreground sm:block">
           archive
@@ -43,7 +43,7 @@ const Footer: React.FC<FooterProps> = ({
           disabled={!canNext}
           className="group rounded-full border-border px-6 text-sm font-medium tracking-[0.4em]"
         >
-          次へ
+          前へ
           <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-1" />
         </Button>
       </div>
