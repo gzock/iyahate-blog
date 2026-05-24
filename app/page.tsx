@@ -17,6 +17,28 @@ export default function Home() {
   const [isLoadingPost, setIsLoadingPost] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const selectPostById = async (
+    postId: string,
+    summaryFallback?: PostSummary
+  ) => {
+    setIsLoadingPost(true);
+    setError(null);
+    const summary =
+      summaryFallback ??
+      allSummaries.find((candidate) => candidate.id === postId) ??
+      null;
+    try {
+      const post = await fetchPostById(postId);
+      setActivePost(post);
+      setActiveSummary(summary ?? null);
+      if (!post) {
+        setError("記事の読み込みに失敗しました。");
+      }
+    } finally {
+      setIsLoadingPost(false);
+    }
+  };
+
   useEffect(() => {
     let mounted = true;
     fetchPostManifest()
@@ -69,28 +91,6 @@ export default function Home() {
     } else {
       setActivePost(null);
       setActiveSummary(null);
-    }
-  };
-
-  const selectPostById = async (
-    postId: string,
-    summaryFallback?: PostSummary
-  ) => {
-    setIsLoadingPost(true);
-    setError(null);
-    const summary =
-      summaryFallback ??
-      allSummaries.find((candidate) => candidate.id === postId) ??
-      null;
-    try {
-      const post = await fetchPostById(postId);
-      setActivePost(post);
-      setActiveSummary(summary ?? null);
-      if (!post) {
-        setError("記事の読み込みに失敗しました。");
-      }
-    } finally {
-      setIsLoadingPost(false);
     }
   };
 
