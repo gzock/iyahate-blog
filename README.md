@@ -39,7 +39,7 @@ npm run dev         # Next.js 開発サーバー
 
 Cloudflare推奨の[@opennextjs/cloudflare](https://opennext.js.org/cloudflare)でデプロイします。`next dev`で開発し、出荷前にOpenNextでWorker形式へ変換します。
 
-1. 依存関係（`@opennextjs/cloudflare`, `wrangler@^4.49.1`など）は`package.json`に含まれています。`.dev.vars`は`NEXTJS_ENV=development`を設定済みで、Next.jsの`.env.development`も読み込みます。
+1. 依存関係（`@opennextjs/cloudflare`, `wrangler`など）は`package.json`に含まれています。Node.js 22は`.node-version`で指定しています。`.dev.vars`は`NEXTJS_ENV=development`を設定済みで、Next.jsの`.env.development`も読み込みます。
 2. Cloudflare Runtimeでの動作確認：
 
 	```bash
