@@ -3,6 +3,10 @@ main = ".open-next/worker.js"
 compatibility_date = "2026-08-02"
 compatibility_flags = ["nodejs_compat", "global_fetch_strictly_public"]
 
+[build]
+command = "node scripts/prepare-static-cache.mjs"
+watch_dir = ".open-next/cache"
+
 [assets]
 binding = "ASSETS"
 directory = ".open-next/assets"
