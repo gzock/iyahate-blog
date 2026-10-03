@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
+import profile from "@/public/profile.png";
 
-// Serve the existing profile image as favicon to satisfy /favicon.ico requests.
-export function GET(request: Request) {
-  const url = new URL("/profile.png", request.url);
-  return NextResponse.redirect(url, 308);
+export const dynamic = "force-static";
+
+// A temporary redirect lets later deployments change the content-hashed URL.
+export function GET() {
+  return new Response(null, {
+    status: 307,
+    headers: { Location: profile.src, "Cache-Control": "public, max-age=3600" },
+  });
 }
