@@ -24,11 +24,12 @@ jobs:
       - run: npm run lint
       # Exercise the same default URL configuration as the automatic deployment.
       - run: env -u SITE_URL npm run build:cloudflare
-      - name: Verify built Worker
+      - run: npx wrangler versions upload --dry-run
+      - name: Verify deployable Worker
         env:
           WRANGLER_SEND_METRICS: "false"
         run: |
-          npx opennextjs-cloudflare preview --ip 127.0.0.1 --port 8788 > /tmp/iyahate-worker.log 2>&1 &
+          npx wrangler dev --ip 127.0.0.1 --port 8788 > /tmp/iyahate-worker.log 2>&1 &
           preview_pid=$!
           trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
           npm run test:smoke -- http://127.0.0.1:8788 /tmp/iyahate-worker.log

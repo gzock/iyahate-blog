@@ -58,6 +58,7 @@ draft: false
 - 上記とNext.js/OpenNextのビルド出力はGit管理しません。記事を更新する際にJSONを編集・コミットする必要はありません。
 - 記事本文は最初のHTMLに含まれます。記事別JSONや全記事本文の一覧JSONは配信しません。
 - Cloudflareでも事前生成したページをStatic Assetsの読み取り専用キャッシュから配信します。R2やデータベースの追加は不要です。
+- Wranglerの実行前に `scripts/prepare-static-cache.mjs` で事前生成済みキャッシュを配信アセットへコピーします。Cloudflareのプレビューが `wrangler versions upload` を直接使う場合も、記事ページを配信できます。
 - Next.js 16.3とOpenNext 1.20の404キャッシュキーの差は `lib/static-cache.ts` で吸収しています。OpenNext更新後も、存在しないURLが404を返し、キャッシュへの書き込みエラーが出ないことを確認してください。
 - プロフィール画像はファイル名にハッシュを付けた静的アセットとして配信します。Cloudflare Imagesの契約・Bindingは不要です。
 - トップページには最新記事、`/archive` には全記事を表示します。記事リンクの先読みを無効にし、未閲覧の記事本文の一括取得を避けています。
@@ -84,6 +85,8 @@ npm run test:smoke -- http://127.0.0.1:8787
 ```
 
 全記事の初期HTML・キャッシュ、正規URL・RSS自動検出、全文検索データ、画像、404、HTMLとRSCの応答の区別を確認します。GitHub Actionsでもテスト・lint・ビルド・Worker実行検証・auditを実行します。CIでは `SITE_URL` を設定せず、自動デプロイと同じ共通設定でビルドできることを確認します。
+
+CIのWorker検証では、Wranglerのアップロード前検証と `wrangler dev` を直接実行します。OpenNextの `preview` は起動時にキャッシュを補うため、アップロード対象へのキャッシュの入れ忘れを検出できません。
 
 ## 本番URLとビルド
 

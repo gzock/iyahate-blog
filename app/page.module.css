@@ -13,7 +13,11 @@
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 0.5rem;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+}
+
+.scrollWrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .scrollWrapper:focus-visible {
