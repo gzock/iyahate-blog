@@ -1,0 +1,35 @@
+name: Checks
+on:
+  push:
+    branches: [master]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      # Exercise the same default URL configuration as the automatic deployment.
+      - run: env -u SITE_URL npm run build:cloudflare
+      - name: Verify built Worker
+        env:
+          WRANGLER_SEND_METRICS: "false"
+        run: |
+          npx opennextjs-cloudflare preview --ip 127.0.0.1 --port 8788 > /tmp/iyahate-worker.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          npm run test:smoke -- http://127.0.0.1:8788 /tmp/iyahate-worker.log
+      - run: npm audit --audit-level=moderate

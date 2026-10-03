@@ -52,7 +52,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: fontFamily.sans,
         mincho: [
           "Hiragino Mincho ProN",
           "ヒラギノ明朝 ProN W6",
@@ -61,6 +61,7 @@ module.exports = {
           "HG明朝E",
           "ＭＳ Ｐ明朝",
           "MS PMincho",
+          "serif",
         ],
       },
     },

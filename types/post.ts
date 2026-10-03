@@ -1,17 +1,15 @@
-export type PostSection = {
-  heading: string;
-  body: string;
-};
-
-export type Post = {
+export type PostSummary = {
   id: string;
   title: string;
-  updatedAt: string; // ISO string
-  lead: string;
-  sections: PostSection[];
+  publishedAt: string;
+  updatedAt: string;
 };
 
-export type PostSummary = Omit<Post, "sections"> & {
-  sectionHeadings: string[];
-  searchIndex: string;
+export type Post = PostSummary & {
+  description: string;
+  html: string;
+};
+
+export type SearchEntry = Pick<PostSummary, "id" | "title" | "publishedAt"> & {
+  text: string;
 };

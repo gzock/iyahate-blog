@@ -1,12 +1,9 @@
 .container {
   display: flex;
-  justify-content: flex-end; /* コンテンツを右寄せにする */
-  align-items: stretch; /* 背景を縦にいっぱいに広げる */
-  overflow: hidden;
-  height: min(82vh, calc(100vh - 220px));
-  min-height: calc(100vh - 260px);
+  justify-content: flex-end;
+  height: min(82vh, calc(100dvh - 220px));
+  min-height: 280px;
   width: 100%;
-  margin: 0;
   padding: 1.5rem 2vw;
 }
 
@@ -15,107 +12,75 @@
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 0.5rem; /* 横スクロールバー用の余白 */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  padding-bottom: 0.5rem;
+  scrollbar-width: thin;
 }
 
-.scrollWrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.verticalText {
-  font-size: 18px; /* お好みで調整してください */
-  white-space: normal; /* 文章の折り返しを可能にする */
-  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
-    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
-    "MS PMincho", serif; /* 明朝体のフォントを指定 */
-  line-height: 2; /* 行間隔を調整 */
-  min-width: 10vw; /* コンテナーの最小幅をビューポートの幅に設定 */
-  box-sizing: border-box; /* ボックスサイズの計算方法を指定 */
-  padding-right: 1em; /* 右側のパディングを追加 */
-  margin-right: 0px;
-}
-
-.paragraph {
-  margin-block: 0 2.2rem;
-}
-
-.paragraph:last-of-type {
-  margin-block-end: 0;
-}
-
-.header {
-  writing-mode: horizontal-tb;
-  position: fixed;
-  top: 0;
-  left: 0; /* 左寄せの位置指定 */
-  width: 100%;
-  background-color: #fff;
-  text-align: left; /* テキストを左に寄せる */
-  z-index: 1000;
-  border-bottom: 1px solid #ccc;
-  padding: 10px 20px; /* 余白の調整 */
-  font-size: 32px; /* フォントサイズを大きくする */
-  font-family: "Hiragino Mincho ProN", serif;
-}
-
-.footer {
-  writing-mode: horizontal-tb;
-
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0; /* 右端の位置指定を追加 */
-  display: flex;
-  justify-content: space-between; /* 左右にコンテンツを配置 */
-  align-items: center; /* 中央揃え */
-  width: 100%;
-  background-color: #fff;
-  z-index: 1000;
-  border-top: 1px solid #ccc;
-  padding: 10px; /* 上下左右のパディングを指定 */
-}
-
-.button {
-  writing-mode: horizontal-tb;
-
-  cursor: pointer;
-  padding: 5px 10px; /* ボタンのサイズを小さく調整 */
-  margin: 0 10px; /* ボタンの外側の余白を設定 */
-  border: none;
-  background-color: #9cb4d1;
-  color: #ffffff;
-  border-radius: 5px;
-  font-size: 14px; /* フォントサイズを調整 */
+.scrollWrapper:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
 }
 
 .article {
   min-width: 100%;
-  width: max-content; /* コンテンツ量に応じて横幅を拡張 */
-  max-width: none;
+  width: max-content;
   height: 100%;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background: linear-gradient(145deg, #ffffff, #f7f7f7);
+  background: linear-gradient(145deg, #fff, #f7f7f7);
   padding: 1rem 3rem;
   border-radius: 1.5rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 8%);
 }
 
-.article section {
+.body {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  margin-block-end: 3rem;
+  gap: 2rem;
+  overflow-wrap: anywhere;
+  font: 18px/2 "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
+    "Hiragino Mincho Pro", "HG明朝E", "ＭＳ Ｐ明朝", "MS PMincho", serif;
 }
 
-.article section:last-of-type {
-  margin-block-end: 0;
+.body p {
+  margin: 0;
+  white-space: normal;
 }
+
+.body h2, .body h3, .body h4, .body h5, .body h6 {
+  font-weight: bold;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.body h2 { font-size: 28px; }
+.body h3 { font-size: 22px; }
+.body a { color: #1e40af; text-decoration: underline; text-underline-offset: 0.2em; }
+.body ul, .body ol { padding-inline-start: 1.5em; }
+.body ul { list-style: disc; }
+.body ol { list-style: decimal; }
+.body blockquote { border-inline-start: 3px solid #9ca3af; padding-inline-start: 1em; }
+.body img { max-height: 100%; max-width: 70vw; object-fit: contain; }
+.body pre, .body [data-table-scroll] {
+  writing-mode: horizontal-tb;
+  height: 100%;
+  max-width: 80vw;
+  overflow: auto;
+  font-size: 14px;
+}
+.body [data-table-scroll] { width: max-content; }
+.body table { width: max-content; }
+.body pre:focus-visible, .body [data-table-scroll]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+.body pre { background: #e5e7eb; padding: 1rem; border-radius: 0.5rem; }
+.body code { font-family: monospace; }
+.body th, .body td { padding: 0.5em; border: 1px solid #9ca3af; }
+.body hr { border-inline-start: 1px solid #9ca3af; }
 
 .meta {
   font-size: 14px;
@@ -124,71 +89,27 @@
 }
 
 .mainTitle {
-  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
-    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
-    "MS PMincho", serif; /* 明朝体のフォントを指定 */
-  line-height: 1.6; /* 行間隔を調整 */
-  font-size: 36px; /* タイトルのフォントサイズを大きく */
-  font-weight: bold; /* フォントを太く */
-  margin: 20px 0; /* 上下の余白を設定 */
-}
-
-.subTitle {
-  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6",
-    "Hiragino Mincho Pro", "ヒラギノ明朝 Pro", "HG明朝E", "ＭＳ Ｐ明朝",
-    "MS PMincho", serif; /* 明朝体のフォントを指定 */
-  line-height: 1.6; /* 行間隔を調整 */
-  font-size: 28px; /* サブタイトルのフォントサイズを大きく */
+  font-family: "Hiragino Mincho ProN", "ヒラギノ明朝 ProN W6", "MS PMincho", serif;
+  line-height: 1.6;
+  font-size: 36px;
   font-weight: bold;
-  margin: 15px 0px; /* 上下の余白を設定 */
-}
-
-.emptyState {
-  writing-mode: horizontal-tb;
-  font-size: 16px;
-  color: #9ca3af;
+  margin: 20px 0;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
     height: calc(100dvh - 160px);
-    min-height: auto;
+    min-height: 240px;
   }
-
   .article {
     padding: 1rem 1.5rem;
     gap: 1.5rem;
     border-radius: 1rem;
   }
-
-  .verticalText {
-    font-size: 16px;
-    line-height: 1.9;
-  }
-
-  .mainTitle {
-    font-size: 24px;
-    margin: 15px 0;
-  }
-
-  .subTitle {
-    font-size: 20px;
-    margin: 10px 0;
-  }
-
-  .header {
-    font-size: 20px;
-    padding: 10px 15px;
-  }
-
-  .footer {
-    padding: 8px;
-  }
-
-  .button {
-    padding: 4px 8px;
-    font-size: 12px;
-    margin: 0 5px;
-  }
+  .body { font-size: 16px; line-height: 1.9; gap: 1.5rem; }
+  .mainTitle { font-size: 24px; margin: 15px 0; }
+  .body h2 { font-size: 20px; }
+  .body h3 { font-size: 18px; }
 }

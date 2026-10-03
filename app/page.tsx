@@ -1,149 +1,19 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { posts } from "@/lib/posts";
+import { postMetadata } from "@/lib/metadata";
+import PostView from "./post-view";
 
-import { useEffect, useMemo, useState } from "react";
-import Header from "./header";
-import Footer from "./footer";
-import Content from "./content";
-import Sidebar from "./sidebar";
-import { Post, PostSummary } from "@/types/post";
-import { fetchPostManifest, fetchPostById } from "@/lib/posts";
+export function generateMetadata(): Metadata {
+  return posts[0] ? postMetadata(posts[0]) : { title: "弥終ブログ" };
+}
 
 export default function Home() {
-  const [allSummaries, setAllSummaries] = useState<PostSummary[]>([]);
-  const [visibleSummaries, setVisibleSummaries] = useState<PostSummary[]>([]);
-  const [activePost, setActivePost] = useState<Post | null>(null);
-  const [activeSummary, setActiveSummary] = useState<PostSummary | null>(null);
-  const [isRecentOpen, setIsRecentOpen] = useState(false);
-  const [isLoadingPost, setIsLoadingPost] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const selectPostById = async (
-    postId: string,
-    summaryFallback?: PostSummary
-  ) => {
-    setIsLoadingPost(true);
-    setError(null);
-    const summary =
-      summaryFallback ??
-      allSummaries.find((candidate) => candidate.id === postId) ??
-      null;
-    try {
-      const post = await fetchPostById(postId);
-      setActivePost(post);
-      setActiveSummary(summary ?? null);
-      if (!post) {
-        setError("記事の読み込みに失敗しました。");
-      }
-    } finally {
-      setIsLoadingPost(false);
-    }
-  };
-
-  useEffect(() => {
-    let mounted = true;
-    fetchPostManifest()
-      .then((summaries) => {
-        if (!mounted) {
-          return;
-        }
-        setAllSummaries(summaries);
-        setVisibleSummaries(summaries);
-        if (summaries[0]) {
-          selectPostById(summaries[0].id, summaries[0]);
-        }
-      })
-      .catch(() => {
-        if (mounted) {
-          setError("記事の読み込みに失敗しました。");
-        }
-      });
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const activeIndex = useMemo(() => {
-    if (!activeSummary) {
-      return -1;
-    }
-    return visibleSummaries.findIndex(
-      (post) => post.id === activeSummary.id
-    );
-  }, [activeSummary, visibleSummaries]);
-
-  const handleSearch = (query: string) => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) {
-      setVisibleSummaries(allSummaries);
-      if (allSummaries[0]) {
-        selectPostById(allSummaries[0].id, allSummaries[0]);
-      }
-      return;
-    }
-
-    const filtered = allSummaries.filter((post) =>
-      post.searchIndex.toLowerCase().includes(normalized)
-    );
-
-    setVisibleSummaries(filtered);
-    if (filtered[0]) {
-      selectPostById(filtered[0].id, filtered[0]);
-    } else {
-      setActivePost(null);
-      setActiveSummary(null);
-    }
-  };
-
-  const handleSelectPost = (postId: string) => {
-    selectPostById(postId);
-    setIsRecentOpen(false);
-  };
-
-  const handleRelativePost = (direction: 1 | -1) => {
-    if (activeIndex === -1) {
-      return;
-    }
-    const target = visibleSummaries[activeIndex + direction];
-    if (target) {
-      selectPostById(target.id, target);
-    }
-  };
-
-  const handlePreviousPost = () => handleRelativePost(-1);
-  const handleNextPost = () => handleRelativePost(1);
-
-  const canGoPrevious = activeIndex > 0;
-  const canGoNext =
-    activeIndex !== -1 && activeIndex < visibleSummaries.length - 1;
-
-  return (
-    <div>
-      <Header
-        onSearch={handleSearch}
-        onToggleRecent={() => setIsRecentOpen((prev) => !prev)}
-      />
-      <hr className="h-px border-0 bg-gray-200 dark:bg-gray-700" />
-      <main className="w-full px-2 py-4 md:px-5 md:py-10 overflow-x-auto">
-        {error ? (
-          <div className="text-center text-sm text-red-500">{error}</div>
-        ) : (
-          <Content post={activePost} isLoading={isLoadingPost} />
-        )}
-      </main>
-      <hr className="h-px border-0 bg-gray-200 dark:bg-gray-700" />
-      <Footer
-        onPrevious={handlePreviousPost}
-        onNext={handleNextPost}
-        canPrevious={canGoPrevious}
-        canNext={canGoNext}
-      />
-      <Sidebar
-        posts={visibleSummaries}
-        activePostId={activeSummary?.id ?? null}
-        onSelect={handleSelectPost}
-        isOpen={isRecentOpen}
-        onClose={() => setIsRecentOpen(false)}
-      />
-    </div>
+  return posts[0] ? <PostView post={posts[0]} /> : (
+    <main id="main-content" className="mx-auto max-w-3xl px-6 py-16">
+      <h1 className="text-2xl">弥終ブログ</h1>
+      <p className="mt-6">公開された記事はまだありません。</p>
+      <Link href="/archive" prefetch={false} className="mt-6 block underline">記事一覧</Link>
+    </main>
   );
 }
