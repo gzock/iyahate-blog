@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import matter from "gray-matter";
+import { load as loadYaml } from "js-yaml";
 import MarkdownIt from "markdown-it";
 
 // Escape raw HTML; markdown-it also rejects unsafe link protocols.
@@ -43,17 +43,18 @@ function plainText(tokens) {
 
 export function parsePost(source, file) {
   source = source.replace(/^\uFEFF/, "");
-  // Reject language selectors before gray-matter can dispatch to its JS engine.
-  if (!/^---\r?\n/.test(source) || !/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(source)) {
+  // Accept only YAML between standalone delimiters; never dispatch other languages.
+  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(source);
+  if (!frontmatter) {
     fail(file, "frontmatter must be YAML enclosed by --- lines");
   }
-  let parsed;
+  let data;
   try {
-    parsed = matter(source);
+    data = loadYaml(frontmatter[1]);
   } catch (error) {
     fail(file, `invalid frontmatter: ${error.message}`);
   }
-  const { data, content } = parsed;
+  const content = source.slice(frontmatter[0].length);
   if (!data || typeof data !== "object" || Array.isArray(data)) fail(file, "frontmatter must be a YAML mapping");
   for (const field of Object.keys(data)) {
     if (!fields.has(field)) fail(file, `unknown field "${field}"; write the article below the frontmatter`);

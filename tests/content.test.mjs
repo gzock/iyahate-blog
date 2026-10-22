@@ -48,6 +48,17 @@ test("wraps tables in a keyboard-accessible scroll region", () => {
   assert.match(post.html, /<\/table><\/div>/);
 });
 
+test("YAML parsing preserves quoted delimiters and body separators without enabling JS tags", () => {
+  const input = source("前半\n\n---\n\n後半", { title: "区切り---を含む題名" });
+  const result = parsePost(input, "delimiters.md");
+  assert.equal(result.title, "区切り---を含む題名");
+  assert.equal(result.html, "<p>前半</p>\n<hr>\n<p>後半</p>\n");
+  assert.throws(() => parsePost(source().replace('title: "記事"', 'title: !!js/function "function () {}"'), "tag.md"), /invalid frontmatter/);
+  assert.throws(() => parsePost(source().replace('title: "記事"', 'title: "記事"\ntitle: "重複"'), "duplicate.md"), /invalid frontmatter/);
+  assert.throws(() => parsePost(source().replace('"2026-01-01T10:00:00+09:00"', '2026-01-01T10:00:00+09:00'), "date.md"), /quoted ISO date/);
+  assert.equal(parsePost(source("", { draft: true }).trimEnd(), "draft.md").draft, true);
+});
+
 test("keeps uppercase Markdown support and removes old search data when unpublishing", (t) => {
   const root = workspace(t);
   const file = path.join(root, "content/posts/EXAMPLE.MD");
