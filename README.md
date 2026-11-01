@@ -4,7 +4,7 @@
 
 ## セットアップ
 
-Node.js 22.23.4を使用してください（`.node-version` とCIで指定）。Node.js 24系では24.22.1以降、26系では26.12.1以降に対応します。これらは[2026年10月21日のセキュリティ修正](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)を含む最低バージョンです。
+Node.js 26.13.0 LTSを使用してください。`.node-version` とCI、`engines` を26系に統一しています。Next.jsは現行安定版の16.4.3を使用します。
 
 ```bash
 npm ci
@@ -103,11 +103,11 @@ npm run start
 
 開発サーバーはNext.jsとして動作し、Cloudflareの実行環境は `npm run preview` で確認します。`esbuild` はアプリから直接使いませんが、OpenNext 1.20のCLIが必要とするためdevDependenciesに残しています。AutoprefixerはTailwind 4と重複するため使用しません。
 
-`@next/eslint-plugin-next@16.4.2` の `fast-glob` 依存は、互換の `globSync` を持つ `tinyglobby@0.2.17` に限定して置き換えています。修正版のない `braces` の [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) を依存経路ごと除くためです。ルートディレクトリのglob指定とNext.jsのリンク検査をテストしています。プラグイン更新時には上流の依存を確認し、このoverrideを見直してください。
+`@next/eslint-plugin-next@16.4.3` の `fast-glob` 依存は、互換の `globSync` を持つ `tinyglobby@0.2.17` に限定して置き換えています。修正版のない `braces` の [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) を依存経路ごと除くためです。ルートディレクトリのglob指定とNext.jsのリンク検査をテストしています。プラグイン更新時には上流の依存を確認し、このoverrideを見直してください。
 
 記事のYAMLヘッダーは `js-yaml` で直接読み込みます。`gray-matter` が依存する旧 `js-yaml` → `argparse` → `sprintf-js` に修正版のない [GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c) があるため、依存経路を除去しました。引用符のない日時を検出する既存の挙動を維持するため、`js-yaml` は4系を使用します。ESLint 10、TypeScript 7、markdown-it 15へのメジャー更新は今回のセキュリティ更新に含めていません。
 
-OpenNextの間接依存 `@node-minify/core@9.0.2` は `glob@10.3.3` を固定しているため、[GHSA-5j98-mcp5-4vw2](https://github.com/advisories/GHSA-5j98-mcp5-4vw2) の修正版 `10.5.0` に限定してoverrideしています。上流の更新時に不要になったか確認してください。
+OpenNextとESLintの間接依存には `glob: 14.0.3` と `minimatch: 11.0.3` のoverrideを適用しています。キャンセル後も探索が続くglobの [GHSA-3g3m-2fjr-6pw4](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4) と、パターン展開によるminimatchのDoS [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249) に対応するためです。メジャーバージョンを跨ぐため、上流更新時にはlint・ファイル探索・Cloudflareビルドを再検証し、不要になったoverrideを外してください。
 
 ## Cloudflare Workers
 
@@ -126,6 +126,6 @@ Workers BuildsのGit連携では、以下の設定を使います。
 - Build command: `npm run build:cloudflare`
 - Deploy command: `npx opennextjs-cloudflare deploy`（または `upload`）
 - devDependenciesもインストールしてください。Markdownの変換はビルド時に行います。
-- Node.jsはリポジトリの `.node-version` に合わせてください。Workers Builds側で `NODE_VERSION` を設定している場合も22.23.4に合わせてください。
+- Node.jsはリポジトリの `.node-version` に合わせてください。Workers Builds側で `NODE_VERSION` を設定している場合も26.13.0に合わせてください。
 
 OpenNextが `npm run build` を呼び出すため、原稿の生成も必ず実行されます。`npm run cf:typegen` でCloudflareのBindings型を再生成できます。

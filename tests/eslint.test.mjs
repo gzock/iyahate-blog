@@ -30,3 +30,21 @@ test("Next link linting still resolves directory globs with the safe glob depend
     assert.ok(result.messages.every((message) => message.ruleId === "@next/next/no-html-link-for-pages"));
   }
 });
+
+test("lint file selection and ignores work with the patched minimatch major", async () => {
+  const eslint = new ESLint({
+    overrideConfigFile: true,
+    overrideConfig: [
+      { ignores: ["**/generated/**"] },
+      { files: ["src/**/*.{js,jsx}"], rules: { "no-undef": "error" } },
+    ],
+  });
+  for (const filePath of ["src/nested/example.js", "src/nested/example.jsx"]) {
+    const [result] = await eslint.lintText("unknownGlobal();", { filePath });
+    assert.equal(result.errorCount, 1);
+    assert.equal(result.messages[0].ruleId, "no-undef");
+  }
+  const [ignored] = await eslint.lintText("unknownGlobal();", { filePath: "src/generated/example.js" });
+  assert.equal(ignored.errorCount, 0);
+  assert.match(ignored.messages[0].message, /ignored/i);
+});
