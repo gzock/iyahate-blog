@@ -4,7 +4,7 @@
 
 ## セットアップ
 
-Node.js 26.13.0 LTSを使用してください。`.node-version` とCI、`engines` を26系に統一しています。Next.jsは現行安定版の16.4.3を使用します。
+Node.js 26.13.0 LTSを使用してください。`.node-version` とCI、`engines` を26系に統一しています。Next.jsは現行安定版の16.4.5を使用します。
 
 ```bash
 npm ci
@@ -103,7 +103,7 @@ npm run start
 
 開発サーバーはNext.jsとして動作し、Cloudflareの実行環境は `npm run preview` で確認します。`esbuild` はアプリから直接使いませんが、OpenNext 1.20のCLIが必要とするためdevDependenciesに残しています。AutoprefixerはTailwind 4と重複するため使用しません。
 
-`@next/eslint-plugin-next@16.4.3` の `fast-glob` 依存は、互換の `globSync` を持つ `tinyglobby@0.2.17` に限定して置き換えています。修正版のない `braces` の [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) を依存経路ごと除くためです。ルートディレクトリのglob指定とNext.jsのリンク検査をテストしています。プラグイン更新時には上流の依存を確認し、このoverrideを見直してください。
+`@next/eslint-plugin-next@16.4.5` の `fast-glob` 依存は、互換の `globSync` を持つ `tinyglobby@0.2.17` に限定して置き換えています。修正版のない `braces` の [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) を依存経路ごと除くためです。ルートディレクトリのglob指定とNext.jsのリンク検査をテストしています。プラグイン更新時には上流の依存を確認し、このoverrideを見直してください。
 
 記事のYAMLヘッダーは `js-yaml` で直接読み込みます。`gray-matter` が依存する旧 `js-yaml` → `argparse` → `sprintf-js` に修正版のない [GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c) があるため、依存経路を除去しました。引用符のない日時を検出する既存の挙動を維持するため、`js-yaml` は4系を使用します。ESLint 10、TypeScript 7、markdown-it 15へのメジャー更新は今回のセキュリティ更新に含めていません。
 
